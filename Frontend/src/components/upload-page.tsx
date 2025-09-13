@@ -160,14 +160,15 @@ export function UploadPage({ onNavigate }: UploadPageProps) {
   if (uploadResponse) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
-        <div className="flex items-center space-x-4 mb-6">
+        <div className="flex items-center space-x-4 mb-6 animate-fade-in">
           <Button variant="ghost" onClick={() => onNavigate('dashboard')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
         </div>
 
-        <Card className="border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800">
+        <Card className="border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800 animate-slide-in-left"
+              style={{ animationDelay: '0.1s' }}>
           <CardHeader>
             <div className="flex items-center space-x-2">
               <CheckCircle className="w-6 h-6 text-green-600" />
@@ -260,7 +261,7 @@ export function UploadPage({ onNavigate }: UploadPageProps) {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex items-center space-x-4 mb-6">
+      <div className="flex items-center space-x-4 mb-6 animate-fade-in">
         <Button variant="ghost" onClick={() => onNavigate('dashboard')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Dashboard
@@ -268,7 +269,7 @@ export function UploadPage({ onNavigate }: UploadPageProps) {
       </div>
 
       <div className="space-y-6">
-        <div>
+        <div className="animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
           <h1 className="text-3xl font-bold">Upload Document</h1>
           <p className="text-muted-foreground">
             Upload your legal documents for AI-powered analysis
@@ -276,7 +277,7 @@ export function UploadPage({ onNavigate }: UploadPageProps) {
         </div>
 
         {/* Upload Area */}
-        <Card>
+        <Card className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
           <CardHeader>
             <CardTitle>Select Files</CardTitle>
             <CardDescription>
@@ -382,7 +383,7 @@ export function UploadPage({ onNavigate }: UploadPageProps) {
         </Card>
 
         {/* Upload Tips */}
-        <Card>
+        <Card className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <AlertTriangle className="w-5 h-5 text-blue-600" />

@@ -31,10 +31,11 @@ export function Navbar({ user, isDark, onToggleTheme, onLogout }: NavbarProps) {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-border animate-slide-in-left">
       <div className="flex items-center justify-between h-full px-6">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 animate-fade-in"
+             style={{ animationDelay: '0.1s' }}>
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
             <Scale className="w-5 h-5 text-white" />
           </div>
@@ -44,7 +45,8 @@ export function Navbar({ user, isDark, onToggleTheme, onLogout }: NavbarProps) {
         </div>
 
         {/* Right side */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 animate-fade-in"
+             style={{ animationDelay: '0.2s' }}>
           {/* Theme toggle */}
           <Button
             variant="ghost"

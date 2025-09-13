@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Scale, Mail, Lock, User } from 'lucide-react';
 import { toast } from 'sonner';
-import { loginWithEmailPassword, signUpWithEmailPassword, loginWithGoogle } from '../services/authService';
+import { signUpWithEmailPassword, loginWithEmailPassword, loginWithGoogle } from '../services/authService';
 
 interface AuthPageProps {
   onAuthSuccess?: () => void;
@@ -23,10 +23,9 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
 
     try {
       await loginWithEmailPassword(loginForm.email, loginForm.password);
-      toast.success('Welcome back!');
       onAuthSuccess?.();
     } catch (error: any) {
-      toast.error(error.message || 'Invalid email or password');
+      toast.error(error.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +43,6 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
 
     try {
       await signUpWithEmailPassword(signupForm.email, signupForm.password);
-      toast.success('Account created successfully!');
       onAuthSuccess?.();
     } catch (error: any) {
       toast.error(error.message || 'Failed to create account');
@@ -57,7 +55,6 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
     setIsLoading(true);
     try {
       await loginWithGoogle();
-      toast.success('Signed in with Google!');
       onAuthSuccess?.();
     } catch (error: any) {
       toast.error(error.message || 'Google sign-in failed');
@@ -67,15 +64,14 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
   };
 
   const handleDemoLogin = async () => {
-    setLoginForm({ email: 'demo@legallens.com', password: 'demo123' });
+    setLoginForm({ email: 'test@example.com', password: 'password' });
     setIsLoading(true);
     
     try {
-      await loginWithEmailPassword('demo@legallens.com', 'demo123');
-      toast.success('Logged in with demo account!');
+      await loginWithEmailPassword('test@example.com', 'password');
       onAuthSuccess?.();
     } catch (error: any) {
-      toast.error('Demo login failed. Please use your own credentials or create an account.');
+      toast.error(error.message || 'Demo login failed');
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +81,7 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="w-full max-w-md">
         {/* Logo and Title */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 animate-fade-in">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl mb-4">
             <Scale className="w-8 h-8 text-white" />
           </div>
@@ -98,7 +94,8 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
         </div>
 
         {/* Auth Card */}
-        <Card className="backdrop-blur-sm bg-background/95 shadow-xl border-0">
+        <Card className="backdrop-blur-sm bg-background/95 shadow-xl border-0 animate-slide-in-left"
+              style={{ animationDelay: '0.2s' }}>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">Welcome</CardTitle>
             <CardDescription className="text-center">

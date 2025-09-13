@@ -12,7 +12,7 @@ import {
   TrendingUp,
   Calendar
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from 'sonner@2.0.3';
 
 interface User {
   uid: string;
@@ -132,7 +132,7 @@ export function Dashboard({ user, onNavigate }: DashboardProps) {
   return (
     <div className="p-6 space-y-6">
       {/* Welcome Header */}
-      <div className="space-y-2">
+      <div className="space-y-2 animate-fade-in">
         <h1 className="text-3xl font-bold">
           Welcome back, {user.displayName || user.email.split('@')[0]}!
         </h1>
@@ -143,7 +143,8 @@ export function Dashboard({ user, onNavigate }: DashboardProps) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800 animate-fade-in hover:scale-105 transition-all duration-300"
+              style={{ animationDelay: '0.1s' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Documents</CardTitle>
             <FileText className="h-4 w-4 text-blue-600" />
@@ -155,7 +156,8 @@ export function Dashboard({ user, onNavigate }: DashboardProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800 animate-fade-in hover:scale-105 transition-all duration-300"
+              style={{ animationDelay: '0.2s' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -167,7 +169,8 @@ export function Dashboard({ user, onNavigate }: DashboardProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-200 dark:border-red-800">
+        <Card className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-200 dark:border-red-800 animate-fade-in hover:scale-105 transition-all duration-300"
+              style={{ animationDelay: '0.3s' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">High Risk</CardTitle>
             <AlertTriangle className="h-4 w-4 text-red-600" />
@@ -179,7 +182,8 @@ export function Dashboard({ user, onNavigate }: DashboardProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900 border-yellow-200 dark:border-yellow-800">
+        <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900 border-yellow-200 dark:border-yellow-800 animate-fade-in hover:scale-105 transition-all duration-300"
+              style={{ animationDelay: '0.4s' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Processing</CardTitle>
             <Clock className="h-4 w-4 text-yellow-600" />
@@ -193,7 +197,7 @@ export function Dashboard({ user, onNavigate }: DashboardProps) {
       </div>
 
       {/* Quick Actions */}
-      <Card>
+      <Card className="animate-slide-in-left" style={{ animationDelay: '0.5s' }}>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
           <CardDescription>
@@ -221,7 +225,7 @@ export function Dashboard({ user, onNavigate }: DashboardProps) {
       </Card>
 
       {/* Recent Documents */}
-      <Card>
+      <Card className="animate-slide-in-right" style={{ animationDelay: '0.6s' }}>
         <CardHeader>
           <CardTitle>Recent Documents</CardTitle>
           <CardDescription>
@@ -251,10 +255,11 @@ export function Dashboard({ user, onNavigate }: DashboardProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {documents.map((doc) => (
+              {documents.map((doc, index) => (
                 <div 
                   key={doc.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-all duration-300 hover:scale-[1.02] animate-fade-in-up"
+                  style={{ animationDelay: `${0.7 + index * 0.1}s` }}
                 >
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-2">

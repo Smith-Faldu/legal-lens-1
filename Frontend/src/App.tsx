@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User as FirebaseUser } from 'firebase/auth';
+import { LandingPage } from './components/landing-page';
 import { AuthPage } from './components/auth-page';
 import { Dashboard } from './components/dashboard';
 import { UploadPage } from './components/upload-page';
@@ -9,44 +9,48 @@ import { ProfilePage } from './components/profile-page';
 import { Navbar } from './components/navbar';
 import { Sidebar } from './components/sidebar';
 import { Toaster } from './components/ui/sonner';
-import { onAuthStateChange, logout, updateUserProfile } from './services/authService';
+import { onAuthStateChange, logout, updateUserProfile, getCurrentUser } from './services/authService';
+import { User } from 'firebase/auth';
 
-// Local User interface to match component expectations
-interface User {
+// Simple user interface for components
+interface SimpleUser {
   uid: string;
   email: string;
   displayName?: string;
 }
 
-// Convert Firebase User to local User interface
-const convertFirebaseUser = (firebaseUser: FirebaseUser): User => ({
-  uid: firebaseUser.uid,
-  email: firebaseUser.email || '',
-  displayName: firebaseUser.displayName || undefined,
-});
+// Convert Firebase User to SimpleUser
+const convertUser = (firebaseUser: User | null): SimpleUser | null => {
+  if (!firebaseUser) return null;
+  return {
+    uid: firebaseUser.uid,
+    email: firebaseUser.email || '',
+    displayName: firebaseUser.displayName || undefined
+  };
+};
 
-type Page = 'auth' | 'dashboard' | 'upload' | 'analysis' | 'chat' | 'profile';
+type Page = 'landing' | 'auth' | 'dashboard' | 'upload' | 'analysis' | 'chat' | 'profile';
 
 interface RouteParams {
   id?: string;
 }
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [currentPage, setCurrentPage] = useState<Page>('auth');
+  const [user, setUser] = useState<SimpleUser | null>(null);
+  const [currentPage, setCurrentPage] = useState<Page>('landing');
   const [routeParams, setRouteParams] = useState<RouteParams>({});
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Listen for auth state changes
+    // Listen to authentication state changes
     const unsubscribe = onAuthStateChange((firebaseUser) => {
-      if (firebaseUser) {
-        setUser(convertFirebaseUser(firebaseUser));
+      const simpleUser = convertUser(firebaseUser);
+      setUser(simpleUser);
+      if (simpleUser) {
         setCurrentPage('dashboard');
       } else {
-        setUser(null);
-        setCurrentPage('auth');
+        setCurrentPage('landing');
       }
       setIsLoading(false);
     });
@@ -62,14 +66,10 @@ export default function App() {
     }
   }, [isDark]);
 
-  const handleAuthSuccess = () => {
-    // Auth state change will be handled by onAuthStateChange listener
-  };
-
   const handleLogout = async () => {
     try {
       await logout();
-      setCurrentPage('auth');
+      setCurrentPage('landing');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -84,10 +84,13 @@ export default function App() {
     try {
       if (updates.displayName) {
         await updateUserProfile(updates.displayName);
-        // The user state will be updated automatically via onAuthStateChange
+        // Refresh user data
+        const currentUser = getCurrentUser();
+        const simpleUser = convertUser(currentUser);
+        setUser(simpleUser);
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Update user error:', error);
     }
   };
 
@@ -99,34 +102,48 @@ export default function App() {
     );
   }
 
+  const handleGetStarted = () => {
+    setCurrentPage('auth');
+  };
+
+  const handleAuthSuccess = () => {
+    setCurrentPage('dashboard');
+  };
+
   const renderPage = () => {
-    if (currentPage === 'auth') {
-      return <AuthPage onAuthSuccess={handleAuthSuccess} />;
+    // If user is logged in, don't show landing or auth pages
+    if (user && (currentPage === 'landing' || currentPage === 'auth')) {
+      return <Dashboard user={user} onNavigate={navigate} />;
     }
 
-    if (!user) {
-      return <AuthPage onAuthSuccess={handleAuthSuccess} />;
+    // If user is not logged in and trying to access protected pages
+    if (!user && currentPage !== 'landing' && currentPage !== 'auth') {
+      return <LandingPage onGetStarted={handleGetStarted} />;
     }
 
     switch (currentPage) {
+      case 'landing':
+        return <LandingPage onGetStarted={handleGetStarted} />;
+      case 'auth':
+        return <AuthPage onAuthSuccess={handleAuthSuccess} />;
       case 'dashboard':
-        return <Dashboard user={user} onNavigate={navigate} />;
+        return <Dashboard user={user!} onNavigate={navigate} />;
       case 'upload':
         return <UploadPage onNavigate={navigate} />;
       case 'analysis':
         return <AnalysisPage documentId={routeParams.id} onNavigate={navigate} />;
       case 'chat':
-        return <ChatPage onNavigate={navigate} />;
+        return <ChatPage documentId={routeParams.id} onNavigate={navigate} />;
       case 'profile':
-        return <ProfilePage user={user} onUpdateUser={updateUser} onLogout={handleLogout} />;
+        return <ProfilePage user={user!} onUpdateUser={updateUser} onLogout={handleLogout} />;
       default:
-        return <Dashboard user={user} onNavigate={navigate} />;
+        return user ? <Dashboard user={user} onNavigate={navigate} /> : <LandingPage onGetStarted={handleGetStarted} />;
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {user && (
+      {user && currentPage !== 'landing' && (
         <Navbar 
           user={user} 
           isDark={isDark} 
@@ -136,14 +153,14 @@ export default function App() {
       )}
       
       <div className="flex">
-        {user && (
+        {user && currentPage !== 'landing' && (
           <Sidebar 
             currentPage={currentPage === 'auth' ? 'dashboard' : currentPage} 
             onNavigate={navigate} 
           />
         )}
         
-        <main className={`flex-1 ${user ? 'pl-64 pt-16' : ''}`}>
+        <main className={`flex-1 ${user && currentPage !== 'landing' ? 'pl-64 pt-16' : ''}`}>
           {renderPage()}
         </main>
       </div>

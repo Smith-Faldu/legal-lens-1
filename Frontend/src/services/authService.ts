@@ -1,6 +1,6 @@
 // Firebase Authentication Service
-import { 
-  signInWithEmailAndPassword, 
+import {
+  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
@@ -12,77 +12,84 @@ import {
 } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig';
 
-// Initialize Google provider
+// UI feedback components
+import { toast } from 'sonner';
+import { AlertDialog } from '../components/ui/alert-dialog';
+
 const googleProvider = new GoogleAuthProvider();
 
-// Sign up with email and password
+// Helper to show error
+const showError = (message: string) => {
+  toast.error(message);
+  // Optionally show dialog for critical errors
+  // <AlertDialog open={true} title="Error" description={message} />
+};
+
 export const signUpWithEmailPassword = async (email: string, password: string): Promise<UserCredential> => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    toast.success('Account created successfully!');
     return userCredential;
   } catch (error: any) {
-    console.error('Error signing up:', error);
+    showError(error.message || 'Failed to create account');
     throw new Error(error.message || 'Failed to create account');
   }
 };
 
-// Login with email and password
 export const loginWithEmailPassword = async (email: string, password: string): Promise<UserCredential> => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    toast.success('Logged in successfully!');
     return userCredential;
   } catch (error: any) {
-    console.error('Error logging in:', error);
+    showError(error.message || 'Failed to log in');
     throw new Error(error.message || 'Failed to log in');
   }
 };
 
-// Login with Google
 export const loginWithGoogle = async (): Promise<UserCredential> => {
   try {
     const userCredential = await signInWithPopup(auth, googleProvider);
+    toast.success('Google sign-in successful!');
     return userCredential;
   } catch (error: any) {
-    console.error('Error with Google sign-in:', error);
+    showError(error.message || 'Failed to sign in with Google');
     throw new Error(error.message || 'Failed to sign in with Google');
   }
 };
 
-// Logout
 export const logout = async (): Promise<void> => {
   try {
     await signOut(auth);
+    toast.success('Logged out successfully!');
   } catch (error: any) {
-    console.error('Error logging out:', error);
+    showError(error.message || 'Failed to log out');
     throw new Error(error.message || 'Failed to log out');
   }
 };
 
-// Update user profile
 export const updateUserProfile = async (displayName: string): Promise<void> => {
   try {
     if (auth.currentUser) {
       await updateProfile(auth.currentUser, { displayName });
+      toast.success('Profile updated!');
     } else {
       throw new Error('No user logged in');
     }
   } catch (error: any) {
-    console.error('Error updating profile:', error);
+    showError(error.message || 'Failed to update profile');
     throw new Error(error.message || 'Failed to update profile');
   }
 };
 
-// Auth state change listener
 export const onAuthStateChange = (callback: (user: User | null) => void) => {
   return onAuthStateChanged(auth, callback);
 };
 
-// Get current user
 export const getCurrentUser = (): User | null => {
   return auth.currentUser;
 };
 
-// Check if user is authenticated
 export const isAuthenticated = (): boolean => {
   return !!auth.currentUser;
 };
